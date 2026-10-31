@@ -1,0 +1,309 @@
+-- ========================================================
+-- SOHDEN HUB V2 - WITH LANGUAGE & THEME SETTINGS
+-- ========================================================
+
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- เช็คและลบ UI เก่า
+if CoreGui:FindFirstChild("SohdenHub_UI") then
+    CoreGui.SohdenHub_UI:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SohdenHub_UI"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+-- หน้าต่างหลัก
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 520, 0, 340)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -170)
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 10, 21)
+MainFrame.ClipsDescendants = true
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(147, 51, 234)
+MainStroke.Thickness = 1.5
+MainStroke.Parent = MainFrame
+
+-- Top Bar
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 45)
+TopBar.BackgroundColor3 = Color3.fromRGB(18, 15, 30)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local LogoBadge = Instance.new("TextLabel")
+LogoBadge.Size = UDim2.new(0, 32, 0, 32)
+LogoBadge.Position = UDim2.new(0, 10, 0.5, -16)
+LogoBadge.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+LogoBadge.Text = "⚡"
+LogoBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
+LogoBadge.TextSize = 18
+LogoBadge.Font = Enum.Font.GothamBold
+LogoBadge.Parent = TopBar
+Instance.new("UICorner", LogoBadge).CornerRadius = UDim.new(0, 8)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Position = UDim2.new(0, 50, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "SOHDEN HUB <font color=\"#06b6d4\">V2</font>"
+Title.RichText = true
+Title.TextColor3 = Color3.fromRGB(241, 245, 249)
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+
+-- ปุ่มปิด / ย่อ
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -70, 0.5, -15)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 25, 45)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(6, 182, 212)
+MinimizeBtn.TextSize = 18
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.Parent = TopBar
+Instance.new("UICorner", MinimizeBtn).CornerRadius = UDim.new(0, 6)
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0.5, -15)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(225, 29, 72)
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 13
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Parent = TopBar
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
+
+-- Sidebar
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 130, 1, -45)
+Sidebar.Position = UDim2.new(0, 0, 0, 45)
+Sidebar.BackgroundColor3 = Color3.fromRGB(15, 12, 25)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local TabContainer = Instance.new("UIListLayout")
+TabContainer.SortOrder = Enum.SortOrder.LayoutOrder
+TabContainer.Padding = UDim.new(0, 6)
+TabContainer.Parent = Sidebar
+
+local SidebarPadding = Instance.new("UIPadding")
+SidebarPadding.PaddingTop = UDim.new(0, 10)
+SidebarPadding.PaddingLeft = UDim.new(0, 8)
+SidebarPadding.Parent = Sidebar
+
+-- Content Container
+local ContentHolder = Instance.new("Frame")
+ContentHolder.Size = UDim2.new(1, -140, 1, -55)
+ContentHolder.Position = UDim2.new(0, 135, 0, 50)
+ContentHolder.BackgroundTransparency = 1
+ContentHolder.Parent = MainFrame
+
+-- สร้างหน้า Pages
+local Pages = {}
+local function CreatePage(name)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Name = name
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.Visible = false
+    Page.ScrollBarThickness = 4
+    Page.CanvasSize = UDim2.new(0, 0, 0, 350)
+    Page.Parent = ContentHolder
+    
+    local UIList = Instance.new("UIListLayout")
+    UIList.SortOrder = Enum.SortOrder.LayoutOrder
+    UIList.Padding = UDim.new(0, 8)
+    UIList.Parent = Page
+    
+    Pages[name] = Page
+    return Page
+end
+
+local MainPlayerPage = CreatePage("MainPlayer")
+local SettingsPage = CreatePage("Settings")
+
+MainPlayerPage.Visible = true
+
+local function CreatePageButton(page, text, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -10, 0, 38)
+    Btn.BackgroundColor3 = Color3.fromRGB(30, 24, 48)
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(241, 245, 249)
+    Btn.Font = Enum.Font.GothamSemibold
+    Btn.TextSize = 13
+    Btn.Parent = page
+    
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+    
+    Btn.MouseButton1Click:Connect(function()
+        callback(Btn)
+    end)
+    return Btn
+end
+
+-- ========================================================
+-- 🌐 ระบบภาษา (Language System Dictionary)
+-- ========================================================
+local currentLang = "TH" -- ค่าเริ่มต้นภาษาไทย
+
+local Texts = {
+    TH = {
+        TabMain = "👤  ตัวละคร (Main)",
+        TabSettings = "⚙️  ตั้งค่า (Settings)",
+        BtnSpeed = "⚡ เพิ่มความเร็ววิ่ง (Speed 100)",
+        BtnJump = "🚀 เพิ่มความสูงกระโดด (Jump 120)",
+        BtnReset = "🔄 รีเซ็ตค่าตัวละครปกติ",
+        ThemeRed = "🔴 ธีมสีแดง",
+        ThemeOrange = "🟠 ธีมสีส้ม",
+        ThemeBlue = "🔵 ธีมสีฟ้า",
+        ThemePurple = "✨ ธีมสีดั้งเดิม (ม่วง)",
+        LangTH = "🇹🇭 เปลี่ยนเป็นภาษาไทย",
+        LangEN = "🇬🇧 Switch to English"
+    },
+    EN = {
+        TabMain = "👤  Main Player",
+        TabSettings = "⚙️  Settings",
+        BtnSpeed = "⚡ Set WalkSpeed (100)",
+        BtnJump = "🚀 Set JumpPower (120)",
+        BtnReset = "🔄 Reset Character",
+        ThemeRed = "🔴 Red Theme",
+        ThemeOrange = "🟠 Orange Theme",
+        ThemeBlue = "🔵 Blue Theme",
+        ThemePurple = "✨ Default Theme (Purple)",
+        LangTH = "🇹🇭 เปลี่ยนเป็นภาษาไทย",
+        LangEN = "🇬🇧 Switch to English"
+    }
+}
+
+-- สร้างปุ่มฟังก์ชันตัวละคร
+local SpeedBtn = CreatePageButton(MainPlayerPage, Texts[currentLang].BtnSpeed, function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    end
+end)
+
+local JumpBtn = CreatePageButton(MainPlayerPage, Texts[currentLang].BtnJump, function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = 120
+    end
+end)
+
+local ResetBtn = CreatePageButton(MainPlayerPage, Texts[currentLang].BtnReset, function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        LocalPlayer.Character.Humanoid.JumpPower = 50
+    end
+end)
+
+-- ========================================================
+-- ⚙️ ตั้งค่า (Settings Theme & Language Selector)
+-- ========================================================
+local function ChangeTheme(color, badgeColor)
+    MainStroke.Color = color
+    LogoBadge.BackgroundColor3 = badgeColor
+end
+
+CreatePageButton(SettingsPage, Texts[currentLang].ThemeRed, function()
+    ChangeTheme(Color3.fromRGB(239, 68, 68), Color3.fromRGB(239, 68, 68))
+end)
+
+CreatePageButton(SettingsPage, Texts[currentLang].ThemeOrange, function()
+    ChangeTheme(Color3.fromRGB(249, 115, 22), Color3.fromRGB(249, 115, 22))
+end)
+
+CreatePageButton(SettingsPage, Texts[currentLang].ThemeBlue, function()
+    ChangeTheme(Color3.fromRGB(6, 182, 212), Color3.fromRGB(6, 182, 212))
+end)
+
+CreatePageButton(SettingsPage, Texts[currentLang].ThemePurple, function()
+    ChangeTheme(Color3.fromRGB(147, 51, 234), Color3.fromRGB(147, 51, 234))
+end)
+
+-- ปุ่มกดเปลี่ยนภาษา
+local TabBtn1, TabBtn2
+local LangThBtn = CreatePageButton(SettingsPage, Texts[currentLang].LangTH, function()
+    currentLang = "TH"
+    SpeedBtn.Text = Texts.TH.BtnSpeed
+    JumpBtn.Text = Texts.TH.BtnJump
+    ResetBtn.Text = Texts.TH.BtnReset
+    TabBtn1.Text = Texts.TH.TabMain
+    TabBtn2.Text = Texts.TH.TabSettings
+end)
+
+local LangEnBtn = CreatePageButton(SettingsPage, Texts[currentLang].LangEN, function()
+    currentLang = "EN"
+    SpeedBtn.Text = Texts.EN.BtnSpeed
+    JumpBtn.Text = Texts.EN.BtnJump
+    ResetBtn.Text = Texts.EN.BtnReset
+    TabBtn1.Text = Texts.EN.TabMain
+    TabBtn2.Text = Texts.EN.TabSettings
+end)
+
+-- ========================================================
+-- 🎬 ระบบสลับหน้าแท็บ Sidebar
+-- ========================================================
+local function CreateTab(name, pageName)
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, -8, 0, 34)
+    TabBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 36)
+    TabBtn.Text = name
+    TabBtn.TextColor3 = Color3.fromRGB(148, 163, 184)
+    TabBtn.Font = Enum.Font.GothamSemibold
+    TabBtn.TextSize = 12
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Left
+    TabBtn.Parent = Sidebar
+    
+    Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 6)
+    
+    local TabPadding = Instance.new("UIPadding")
+    TabPadding.PaddingLeft = UDim.new(0, 10)
+    TabPadding.Parent = TabBtn
+
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, page in pairs(Pages) do
+            page.Visible = false
+        end
+        if Pages[pageName] then
+            Pages[pageName].Visible = true
+        end
+    end)
+    return TabBtn
+end
+
+TabBtn1 = CreateTab(Texts.TH.TabMain, "MainPlayer")
+TabBtn2 = CreateTab(Texts.TH.TabSettings, "Settings")
+
+-- ปุ่มย่อ / ปิดหน้าต่าง
+local isMinimized = false
+MinimizeBtn.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    local targetSize = isMinimized and UDim2.new(0, 520, 0, 45) or UDim2.new(0, 520, 0, 340)
+    TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = targetSize}):Play()
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- แอนิเมชันเปิดตัว
+MainFrame.Size = UDim2.new(0, 0, 0, 0)
+TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Size = UDim2.new(0, 520, 0, 340)}):Play()
